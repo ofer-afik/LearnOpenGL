@@ -7,14 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 
-add_executable(build
+add_executable(linux_build
     src/main.cpp
     glad.c
 )
 
-target_include_directories(build PRIVATE ./include)
+target_include_directories(linux_build PRIVATE ./include)
 
-target_link_libraries(build PRIVATE
+target_link_libraries(linux_build PRIVATE
     glfw
     OpenGL::GL
     ${CMAKE_DL_LIBS}
