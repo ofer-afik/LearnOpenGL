@@ -20,7 +20,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-linux
-          path: build/linux_build
+          path: build/build
           if-no-files-found: error
 
   macos:
@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-macos
-          path: build/linux_build
+          path: build/build
           if-no-files-found: error
 
   windows:
@@ -63,5 +63,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-windows
-          path: build/linux_build.exe
+          path: build/build.exe
           if-no-files-found: error

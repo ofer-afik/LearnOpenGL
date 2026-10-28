@@ -20,14 +20,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
-add_executable(linux_build
+add_executable(build
     src/main.cpp
     glad.c
 )
 
-target_include_directories(linux_build PRIVATE ./include)
+target_include_directories(build PRIVATE ./include)
 
-target_link_libraries(linux_build PRIVATE
+target_link_libraries(build PRIVATE
     glfw
     OpenGL::GL
     ${CMAKE_DL_LIBS}
