@@ -15,21 +15,32 @@
 const char *vertexShaderSource = 
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    "void main() {gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}\0";
+    "out vec4 vertexColor\n;"
+    "void main() {\n"
+    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "    vertexColor = vec4((aPos.x + 1.0f) / 2.0f, (aPos.y + 1.0f) / 2, (aPos.y * aPos.x + 1.0f) / 2, 1.0f);"
+    "}\0";
 const char *fragmentShaderSource = 
     "#version 330 core\n"
     "out vec4 FragColor;\n"
-    "void main() {FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}";
+    "in vec4 vertexColor;\n"
+    "void main() {FragColor = vertexColor;}";
 
 // Function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // Vertex data
-float vertices[9] = {
-    -0.25f, -0.2f, 0.0f,
-    0.25f, -0.2f, 0.0f,
-    0.0f,  0.2f, 0.0f, 
+float vertices[12] = {
+    -0.25f, -0.25f, 0.0f,
+    0.25f, -0.25f, 0.0f,
+    0.25f,  0.25f, 0.0f,
+    -0.25, 0.25, 0.0f
+};
+
+unsigned int indices[6] = {
+    0, 1, 3,
+    3, 2, 1
 };
 
 // Main function
@@ -133,6 +144,11 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
+    unsigned int ebo;
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // Render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -148,7 +164,7 @@ int main()
         // Draw the triangle
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Rendering and callback events
         glfwSwapBuffers(window);
@@ -176,7 +192,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 8; i += 3)
+        for (int i = 0; i < 12; i += 3)
         {
             vertices[i] -= 0.1f;
         }
@@ -184,7 +200,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 8; i += 3)
+        for (int i = 0; i < 12; i += 3)
         {
             vertices[i] += 0.1f;
         }
@@ -192,7 +208,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        for (int i = 1; i < 8; i += 3)
+        for (int i = 1; i < 12; i += 3)
         {
             vertices[i] += 0.1f;
         }
@@ -200,7 +216,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        for (int i = 1; i < 8; i += 3)
+        for (int i = 1; i < 12; i += 3)
         {
             vertices[i] -= 0.1f;
         }
