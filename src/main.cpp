@@ -16,13 +16,16 @@
 const char *vertexShaderSource = 
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "out vec4 color;\n"
     "void main() {\n"
     "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   color = vec4(aColor, 1.0f);"
     "}\0";
 const char *fragmentShaderSource = 
     "#version 330 core\n"
+    "in vec4 color;\n"
     "out vec4 FragColor;\n"
-    "uniform vec4 color;\n"
     "void main() {FragColor = color;}";
 
 // Function declarations
@@ -30,16 +33,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // Vertex data
-float vertices[12] = {
-    -0.25f, -0.25f, 0.0f,
-    0.25f, -0.25f, 0.0f,
-    0.25f,  0.25f, 0.0f,
-    -0.25, 0.25, 0.0f
+float vertices[18] = {
+    // aPos                 // aColor
+    -0.25f, -0.2f, 0.0f,    1.0f, 0.25f, 0.25f,
+    0.25f, -0.2f, 0.0f,     0.25f, 1.0f, 0.25f,
+    0.0f,  0.2f, 0.0f,      0.25f, 0.25f, 1.0f
 };
 
-unsigned int indices[6] = {
-    0, 1, 3,
-    3, 2, 1
+unsigned int indices[3] = {
+    0, 1, 2
 };
 
 // Main function
@@ -140,17 +142,15 @@ int main()
     unsigned int vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(0));
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     unsigned int ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-#if DEBUG
-        std::cout << glGetUniformLocation(shaderProgram, "color") << std::endl;
-#endif
 
     // Render loop
     while (!glfwWindowShouldClose(window))
@@ -167,13 +167,8 @@ int main()
         // Draw the triangle
         glUseProgram(shaderProgram);
         float t = glfwGetTime();
-        float redValue = std::sin(t) / 2.0f + 0.5f;
-        float blueValue = -std::sin(t) / 2.0f + 0.5f;
-        float greenValue = std::cos(t) / 2.0f + 0.5f;
-
-        glUniform4f(glGetUniformLocation(shaderProgram, "color"), redValue, blueValue, greenValue, 1.0f);
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Rendering and callback events
         glfwSwapBuffers(window);
@@ -201,7 +196,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 12; i += 3)
+        for (int i = 0; i < 18; i += 6)
         {
             vertices[i] -= 0.1f;
         }
@@ -209,7 +204,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 12; i += 3)
+        for (int i = 0; i < 18; i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -217,7 +212,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        for (int i = 1; i < 12; i += 3)
+        for (int i = 1; i < 18; i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -225,7 +220,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        for (int i = 1; i < 12; i += 3)
+        for (int i = 1; i < 18; i += 6)
         {
             vertices[i] -= 0.1f;
         }
