@@ -16,11 +16,16 @@ jobs:
         run: cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
       - name: Build
         run: cmake --build build --parallel
-      - name: Upload Linux executable
+      - name: Package Linux application
+        run: |
+          mkdir -p package/src
+          cp build/build package/build
+          cp -R src/shaders package/src/
+      - name: Upload Linux application
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-linux
-          path: build/build
+          path: package/
           if-no-files-found: error
 
   macos:
@@ -32,11 +37,16 @@ jobs:
         run: cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
       - name: Build
         run: cmake --build build --parallel
-      - name: Upload macOS executable
+      - name: Package macOS application
+        run: |
+          mkdir -p package/src
+          cp build/build package/build
+          cp -R src/shaders package/src/
+      - name: Upload macOS application
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-macos
-          path: build/build
+          path: package/
           if-no-files-found: error
 
   windows:
@@ -59,9 +69,14 @@ jobs:
         run: cmake -S . -B build -G Ninja -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
       - name: Build
         run: cmake --build build --parallel
-      - name: Upload Windows executable
+      - name: Package Windows application
+        run: |
+          mkdir -p package/src
+          cp build/build.exe package/build.exe
+          cp -R src/shaders package/src/
+      - name: Upload Windows application
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-windows
-          path: build/build.exe
+          path: package/
           if-no-files-found: error
