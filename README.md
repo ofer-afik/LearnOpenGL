@@ -7,7 +7,7 @@ I am trying to self learn OpenGL, using [LearnOpenGL](learnopengl.com). Why? Bec
 Currently I have a very interesting application, with a moving triangle:
 ![alt text](src_scrshot_readme.png)
 
-Try it out [here]()!
+Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.2.0)!
 
 ### Linux
 If, on linux, the system says something about "no app to run file of type executable", or something similar, know that this is a common problem. There are two solutions:
