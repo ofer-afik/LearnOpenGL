@@ -65,8 +65,8 @@ public:
         glGetShaderiv(fs, GL_COMPILE_STATUS, &fsSuccess);
         if (!fsSuccess)
         {
-            glGetShaderInfoLog(vs, 512, NULL, fsInfoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << fsInfoLog << std::endl;
+            glGetShaderInfoLog(fs, 512, NULL, fsInfoLog);
+            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << fsInfoLog << std::endl;
         }
 #endif
 

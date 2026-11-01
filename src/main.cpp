@@ -1,6 +1,10 @@
 // DEBUG
 #define DEBUG true
 
+// Image Loader
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // C++ Inclusions
 #include <iostream>
 #include <cmath>
@@ -107,7 +111,6 @@ int main()
 
         // Draw the triangle
         shader.Use();
-        float t = glfwGetTime();
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
@@ -137,7 +140,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 18; i += 6)
+        for (int i = 0; i < std::size(vertices); i += 6)
         {
             vertices[i] -= 0.1f;
         }
@@ -145,7 +148,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        for (int i = 0; i < 18; i += 6)
+        for (int i = 0; i < std::size(vertices); i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -153,7 +156,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        for (int i = 1; i < 18; i += 6)
+        for (int i = 1; i < std::size(vertices); i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -161,7 +164,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        for (int i = 1; i < 18; i += 6)
+        for (int i = 1; i < std::size(vertices); i += 6)
         {
             vertices[i] -= 0.1f;
         }

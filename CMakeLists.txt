@@ -37,3 +37,7 @@ target_link_libraries(build PRIVATE
     OpenGL::GL
     ${CMAKE_DL_LIBS}
 )
+
+if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_options(build PRIVATE -static-libgcc -static-libstdc++)
+endif()
