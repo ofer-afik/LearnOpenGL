@@ -23,15 +23,20 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // Vertex data
-float vertices[18] = {
+float vertices[36] = {
     // aPos                 // aColor
-    -0.25f, -0.2f, 0.0f,    1.0f, 0.25f, 0.25f,
-    0.25f, -0.2f, 0.0f,     0.25f, 1.0f, 0.25f,
-    0.0f,  0.2f, 0.0f,      0.25f, 0.25f, 1.0f
+    -0.25f, -0.2f, 0.0f,    1.0f, 1.0f, 1.0f,
+    0.25f, -0.2f, 0.0f,     1.0f, 1.0f, 1.0f,
+    0.0f,  0.2f, 0.0f,      1.0f, 1.0f, 1.0f,
+
+    -0.25f, -0.2f, 0.0f,    0.0f, 0.0f, 0.0f,
+    0.25f, -0.2f, 0.0f,     0.0f, 0.0f, 0.0f,
+    0.0f,  0.2f, 0.0f,      0.0f, 0.0f, 0.0f
 };
 
-unsigned int indices[3] = {
-    0, 1, 2
+unsigned int indices[6] = {
+    0, 1, 2,
+    3, 4, 5
 };
 
 // Main function
@@ -112,7 +117,7 @@ int main()
         // Draw the triangle
         shader.Use();
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Rendering and callback events
         glfwSwapBuffers(window);
@@ -133,14 +138,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // Input function
 void processInput(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
 
+    // << >>
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
-        for (int i = 0; i < std::size(vertices); i += 6)
+        for (int i = 0; i < 18; i += 6)
         {
             vertices[i] -= 0.1f;
         }
@@ -148,7 +154,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        for (int i = 0; i < std::size(vertices); i += 6)
+        for (int i = 0; i < 18; i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -156,7 +162,7 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        for (int i = 1; i < std::size(vertices); i += 6)
+        for (int i = 1; i < 18; i += 6)
         {
             vertices[i] += 0.1f;
         }
@@ -164,7 +170,40 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        for (int i = 1; i < std::size(vertices); i += 6)
+        for (int i = 1; i < 18; i += 6)
+        {
+            vertices[i] -= 0.1f;
+        }
+    }
+
+    // WASD
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        for (int i = 18; i < std::size(vertices); i += 6)
+        {
+            vertices[i] -= 0.1f;
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        for (int i = 18; i < std::size(vertices); i += 6)
+        {
+            vertices[i] += 0.1f;
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        for (int i = 19; i < std::size(vertices); i += 6)
+        {
+            vertices[i] += 0.1f;
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        for (int i = 19; i < std::size(vertices); i += 6)
         {
             vertices[i] -= 0.1f;
         }
