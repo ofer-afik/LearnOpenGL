@@ -20,11 +20,38 @@
 
 #include "shader.hpp"
 
-#define INITIAL_WINDOW_WIDTH 800
-#define INITIAL_WINDOW_HEIGHT 800
+int WINDOW_WIDTH = 800;
+int WINDOW_HEIGHT = 800;
+
+glm::vec3 cubePositions[10] {
+    25.0f * glm::vec3( 3.2f,  4.0f,  -0.8f),
+    25.0f * glm::vec3(-1.5f, -2.2f,  -2.5f),
+    25.0f * glm::vec3(-4.8f, -2.0f,  -3.3f),
+    25.0f * glm::vec3( 2.4f, -0.4f,  -3.5f),
+    25.0f * glm::vec3(-1.7f,  6.0f,  -4.5f), 
+    25.0f * glm::vec3( 1.3f, -2.0f,  -2.5f), 
+    25.0f * glm::vec3( 1.5f,  2.0f,  -2.5f),
+    25.0f * glm::vec3( 1.5f,  0.2f,  -1.5f),
+    25.0f * glm::vec3(-1.3f,  1.0f,  -1.5f),
+    25.0f * glm::vec3( 0.0f,  0.0f,   0.0f),
+};
+
+
+// Camera variables
+glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
+glm::vec3 camTrg = glm::vec3(0.0f, 0.0f, 39.0f);
+glm::vec2 camRot = glm::vec2(0.0f, 0.0f);
+float camSpd = 200.0;
+glm::vec2 lastMousePos = glm::vec2(400.0f, 400.0f);
+
+float mouseSensitivity = 0.01f;
+bool mouseMoved = false;
+
+// Delta time variable
 
 // Function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
 void updateDt();
 
@@ -36,14 +63,14 @@ float vertices[180] = {
      10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
     -10.0f,  10.0f, -10.0f,  0.0f, 1.0f,
     -10.0f, -10.0f, -10.0f,  0.0f, 0.0f,
-
+    
     -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-     10.0f, -10.0f,  10.0f,  1.0f, 0.0f,
-     10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
-     10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
+    10.0f, -10.0f,  10.0f,  1.0f, 0.0f,
+    10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
+    10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
     -10.0f,  10.0f,  10.0f,  0.0f, 1.0f,
     -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-
+    
     -10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
     -10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
     -10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
@@ -72,26 +99,6 @@ float vertices[180] = {
     -10.0f,  10.0f,  10.0f,  0.0f, 0.0f,
     -10.0f,  10.0f, -10.0f,  0.0f, 1.0f
 };
-
-glm::vec3 cubePositions[10] {
-    10.0f * glm::vec3( 0.0f,  0.0f, 0.0f),
-    10.0f * glm::vec3( 2.0f,  5.0f, -15.0f),
-    10.0f * glm::vec3(-1.5f, -2.2f, -2.5f),
-    10.0f * glm::vec3(-3.8f, -2.0f, -12.3f),
-    10.0f * glm::vec3( 2.4f, -0.4f, -3.5f),
-    10.0f * glm::vec3(-1.7f,  3.0f, -7.5f), 
-    10.0f * glm::vec3( 1.3f, -2.0f, -2.5f), 
-    10.0f * glm::vec3( 1.5f,  2.0f, -2.5f),
-    10.0f * glm::vec3( 1.5f,  0.2f, -1.5f),
-    10.0f * glm::vec3(-1.3f,  1.0f, -1.5f)
-};
-
-// Camera variables
-glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
-glm::vec3 camTrg = glm::vec3(0.0f, 0.0f, 0.0f);
-float camSpd = 100.0;
-
-// Delta time variable
 float dt;
 float lastFrame;
 
@@ -110,7 +117,7 @@ int main()
 #endif
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -118,6 +125,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSetCursorPos(window, 400.0, 400.0);
 
     // Initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -127,11 +135,11 @@ int main()
     }
 
     // Define viewport for OpenGL
-    int min = std::min(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
-    glViewport(std::max(INITIAL_WINDOW_WIDTH - INITIAL_WINDOW_HEIGHT, 0) / 2, std::max(INITIAL_WINDOW_HEIGHT - INITIAL_WINDOW_WIDTH, 0) / 2, min, min);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Callbacks
     glfwSetWindowSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // Define GL states
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -216,7 +224,7 @@ int main()
         view = glm::lookAt(camPos,
                            camTrg,
                            camDirUp);
-        projection = glm::perspective(glm::radians(90.0f), (float)INITIAL_WINDOW_WIDTH/(float)INITIAL_WINDOW_HEIGHT, 0.1f, 1000.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
         // Draw the triangle
         shader.Use();
         shader.setMat4("view", view);
@@ -225,10 +233,10 @@ int main()
         for (int i = 0; i < 10; i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(cubePositions[1]));
+            model = glm::translate(model, glm::vec3(cubePositions[i]));
             model = glm::rotate(model,
-                                glm::radians((float)sin(glfwGetTime()) * i * 20.0f),
-                                glm::normalize(glm::vec3((float)i * (float)i, (float)i, 1.0f)));
+                                glm::radians(i * 20.0f + 45.0f),
+                                glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
             shader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -244,19 +252,67 @@ int main()
 // Prepare resize callback for opengl viewport
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) 
 {
-    int min = std::min(width, height);
-    glViewport(std::max(width - height, 0) / 2, std::max(height - width, 0) / 2, min, min);
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
+    glViewport(0, 0, width, height);
+}
+
+// Prepare mouse movement callback
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
+
+    bool shouldReturn;
+    if (!mouseMoved) shouldReturn = true;
+    mouseMoved = true;
+
+    if (shouldReturn)
+    {
+        lastMousePos = glm::vec2(xpos, ypos);
+        return;
+    }
+
+    glm::vec2 offset = glm::vec2(glm::vec2(xpos, ypos) - lastMousePos);    
+    offset *= mouseSensitivity;
+
+    camRot.x += offset.y;
+    camRot.y -= offset.x;
+    
+    camRot.x = camRot.x < glm::radians(-79.9f) ? glm::radians(-79.9f) : camRot.x > glm::radians(79.9f) ? glm::radians(79.9f) : camRot.x;
+    camRot.y = camRot.y > glm::radians(360.0f) ? glm::radians(360.0f) : camRot.y;
+
+    glm::vec3 dir;
+    dir.x = std::cos(camRot.x) * std::sin(camRot.y);
+    dir.y = std::sin(camRot.x);
+    dir.z = -std::cos(camRot.x) * std::cos(camRot.y);
+    camTrg = glm::normalize(dir) + camPos;
+
+    lastMousePos = glm::vec2(xpos, ypos);
 }
 
 // Input function
 void processInput(GLFWwindow *window)
 {
-   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        glfwSetCursorPos(window, width/2.0f, height/2.0f);
+        mouseMoved = false;
+    }
+    
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
 
-    // << >>
+    // Movement
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
         camPos.x -= camSpd * dt;
@@ -277,20 +333,20 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        camTrg.y -= camSpd * dt;
         camPos.y -= camSpd * dt;
+        camTrg.y -= camSpd * dt;
     }
 
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
     {
-        camTrg.z += camSpd * dt;
         camPos.z += camSpd * dt;
+        camTrg.z += camSpd * dt;
     }
-
+        
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
     {
-        camTrg.z -= camSpd * dt;
         camPos.z -= camSpd * dt;
+        camTrg.z -= camSpd * dt;
     }
 }
 

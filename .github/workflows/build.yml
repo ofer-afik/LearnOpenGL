@@ -20,7 +20,8 @@ jobs:
         run: |
           mkdir -p package/src
           cp build/build package/build
-          cp -R src/shaders package/src/
+          cp -R src/assets/textures package/src
+          cp -R src/asssets/shaders package/src/
       - name: Upload Linux application
         uses: actions/upload-artifact@v4
         with:
@@ -41,7 +42,8 @@ jobs:
         run: |
           mkdir -p package/src
           cp build/build package/build
-          cp -R src/shaders package/src/
+          cp -R src/assets/textures package/src
+          cp -R src/assets/shaders package/src/
       - name: Upload macOS application
         uses: actions/upload-artifact@v4
         with:
@@ -73,7 +75,8 @@ jobs:
         run: |
           mkdir -p package/src
           cp build/build.exe package/build.exe
-          cp -R src/shaders package/src/
+          cp -R src/assets/textures package/src
+          cp -R src/assets/shaders package/src/
       - name: Upload Windows application
         uses: actions/upload-artifact@v4
         with:
