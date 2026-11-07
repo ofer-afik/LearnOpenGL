@@ -44,6 +44,8 @@ glm::vec2 camRot = glm::vec2(0.0f, 0.0f);
 float camSpd = 200.0;
 glm::vec2 lastMousePos = glm::vec2(400.0f, 400.0f);
 
+float camFov = 90.0f;
+
 float mouseSensitivity = 0.01f;
 bool mouseMoved = false;
 
@@ -52,6 +54,7 @@ bool mouseMoved = false;
 // Function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void updateDt();
 
@@ -140,6 +143,7 @@ int main()
     // Callbacks
     glfwSetWindowSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // Define GL states
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -224,7 +228,7 @@ int main()
         view = glm::lookAt(camPos,
                            camTrg,
                            camDirUp);
-        projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
+        projection = glm::perspective(glm::radians(camFov), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
         // Draw the triangle
         shader.Use();
         shader.setMat4("view", view);
@@ -288,6 +292,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     camTrg = glm::normalize(dir) + camPos;
 
     lastMousePos = glm::vec2(xpos, ypos);
+}
+
+// Prepare scroll callback
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camFov = camFov - yoffset;
+    camFov = camFov < 1.0f ? 1.0f : camFov > 180.0f ? 180.0f : camFov;
 }
 
 // Input function
