@@ -24,18 +24,25 @@ int WINDOW_WIDTH = 800;
 int WINDOW_HEIGHT = 800;
 
 glm::vec3 cubePositions[10] {
-    25.0f * glm::vec3( 3.2f,  4.0f,  -0.8f),
-    25.0f * glm::vec3(-1.5f, -2.2f,  -2.5f),
-    25.0f * glm::vec3(-4.8f, -2.0f,  -3.3f),
-    25.0f * glm::vec3( 2.4f, -0.4f,  -3.5f),
-    25.0f * glm::vec3(-1.7f,  6.0f,  -4.5f), 
-    25.0f * glm::vec3( 1.3f, -2.0f,  -2.5f), 
-    25.0f * glm::vec3( 1.5f,  2.0f,  -2.5f),
-    25.0f * glm::vec3( 1.5f,  0.2f,  -1.5f),
-    25.0f * glm::vec3(-1.3f,  1.0f,  -1.5f),
-    25.0f * glm::vec3( 0.0f,  0.0f,   0.0f),
+    glm::vec3( 80.0f, 100.0f, -20.0f),
+    glm::vec3(-37.5f, -55.0f, -62.5f),
+    glm::vec3(-120.0f, -50.0f, -82.5f),
+    glm::vec3( 60.0f, -10.0f, -87.5f),
+    glm::vec3(-42.5f, 150.0f, -112.5f),
+    glm::vec3( 32.5f, -50.0f, -62.5f),
+    glm::vec3( 37.5f,  50.0f, -62.5f),
+    glm::vec3( 37.5f,   5.0f, -37.5f),
+    glm::vec3(-32.5f,  25.0f, -37.5f),
+    glm::vec3(  0.0f,   0.0f,   0.0f),
 };
+// glm::vec4 objectColor = glm::vec4(1.0f, 0.5f, 0.31f, 1.0f);
+glm::vec4 objectColor = glm::vec4(1.0f);
 
+glm::vec3 lightSourcePos = glm::vec3(75.0f, 25.0f, 200.0f);
+glm::vec4 lightSrcClr = glm::vec4(0.95f, 0.80f, 0.42f, 1.0f);
+// glm::vec4 lightSrcClr = glm::vec4(0.0f);
+
+glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.2f, 1.0f);
 
 // Camera variables
 glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
@@ -59,55 +66,56 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void updateDt();
 
-float vertices[] = {
-    // Front face
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
+float vertices[216] = {
     // Back face
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+     10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+    -10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+
+    // Front face
+    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+     10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
 
     // Left face
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f,  10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f, -10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
 
     // Right face
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-
-    // Top face
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f,  10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
 
     // Bottom face
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f
+    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
+    -10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
+
+    // Top face
+    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
+    -10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
+    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
 };
+
 float dt;
 float lastFrame;
 
@@ -152,44 +160,15 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // Define GL states
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
     // Shaders
-    Shader shader = Shader("src/assets/shaders/objectShader/objectShader.vs", "src/assets/shaders/objectShader/objectShader.fs");
+    Shader objectShader = Shader("src/assets/shaders/objectShader/objectShader.vs", "src/assets/shaders/objectShader/objectShader.fs");
+
+    Shader lightShader = Shader("src/assets/shaders/lightShader/lightShader.vs", "src/assets/shaders/lightShader/lightShader.fs");
 
     // Z-Buffer
     glEnable(GL_DEPTH_TEST);
-
-    // Textures
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    unsigned char *imgSrc = stbi_load("src/assets/textures/final_render.jpg", &width, &height, &nrChannels, 0);
-#if DEBUG
-    if (imgSrc)
-    {
-#endif
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imgSrc);
-        glGenerateMipmap(GL_TEXTURE_2D);
-#if DEBUG
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-#endif
-    stbi_image_free(imgSrc);
-
-    shader.Use();
-    shader.setInt("tex0", 0);
 
     // Buffers
     unsigned int vbo;
@@ -197,19 +176,13 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(0));
+    unsigned int cubeVAO;
+    glGenVertexArrays(1, &cubeVAO);
+    glBindVertexArray(cubeVAO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(0));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    unsigned int ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-
 
     // Render loop
     while (!glfwWindowShouldClose(window))
@@ -235,11 +208,17 @@ int main()
                            camTrg,
                            camDirUp);
         projection = glm::perspective(glm::radians(camFov), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
-        // Draw the triangle
-        shader.Use();
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
-        glBindVertexArray(vao);
+
+        objectShader.Use();
+        objectShader.setVec("baseColor", objectColor);
+        objectShader.setVec("lightColor", lightSrcClr);
+        objectShader.setVec("ambientColor", lightAmbClr);
+
+        objectShader.setVec("lightPos", lightSourcePos);
+
+        objectShader.setMat4("view", view);
+        objectShader.setMat4("projection", projection);
+
         for (int i = 0; i < 10; i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
@@ -247,9 +226,20 @@ int main()
             model = glm::rotate(model,
                                 glm::radians(i * 20.0f + 45.0f),
                                 glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
-            shader.setMat4("model", model);
+            objectShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        lightShader.Use();
+        lightShader.setVec("color", lightSrcClr);
+        lightShader.setMat4("view", view);
+        lightShader.setMat4("projection", projection);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, lightSourcePos);
+        lightShader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+
         // Rendering and callback events
         glfwSwapBuffers(window);
         glfwPollEvents();

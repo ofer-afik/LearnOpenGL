@@ -35,7 +35,7 @@ public:
         }
         catch(std::ifstream::failure e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+            std::cout << "ERROR::" << ID << "::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         }
         const char* vsCode = vShaderCode.c_str();
         const char* fsCode = fShaderCode.c_str();
@@ -51,7 +51,7 @@ public:
         if (!vsSuccess)
         {
             glGetShaderInfoLog(vs, 512, NULL, vsInfoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << vsInfoLog << std::endl;
+            std::cout << "ERROR::" << ID << "::SHADER::VERTEX::COMPILATION_FAILED\n" << vsInfoLog << std::endl;
         }
 #endif
 
@@ -67,7 +67,7 @@ public:
         if (!fsSuccess)
         {
             glGetShaderInfoLog(fs, 512, NULL, fsInfoLog);
-            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << fsInfoLog << std::endl;
+            std::cout << "ERROR::" << ID << "::SHADER::FRAGMENT::COMPILATION_FAILED\n" << fsInfoLog << std::endl;
         }
 #endif
 
@@ -82,7 +82,7 @@ public:
         if (!programSuccess)
         {
             glGetProgramInfoLog(ID, 512, NULL, programInfoLog);
-            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << programInfoLog << std::endl;
+            std::cout << "ERROR::" << ID << "::SHADER::PROGRAM::LINKING_FAILED\n" << programInfoLog << std::endl;
         }
 #endif
 
@@ -109,6 +109,14 @@ public:
     }
     void setMat4(const std::string &name, glm::mat4 value) const
     {
-        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &value[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+    }
+    void setVec(const std::string &name, glm::vec4 value) const
+    {
+        glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
+    }
+    void setVec(const std::string &name, glm::vec3 value) const
+    {
+        glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
     }
 };
