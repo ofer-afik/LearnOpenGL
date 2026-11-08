@@ -19,16 +19,27 @@ def main():
     print(f"Launching built application: {' '.join(args.command)}", flush=True)
     application_log = Path("logs/application.log")
     application_log.parent.mkdir(parents=True, exist_ok=True)
+    command = list(args.command)
+    working_directory = args.cwd.resolve() if args.cwd else None
+    if os.name == "nt":
+        executable = Path(command[0])
+        if not executable.is_absolute():
+            command[0] = str(((working_directory or Path.cwd()) / executable).resolve())
+
     try:
         process = subprocess.Popen(
-            args.command,
+            command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             start_new_session=(os.name != "nt"),
-            cwd=args.cwd,
+            cwd=working_directory,
         )
     except OSError as error:
-        message = f"Failed to start application: {error}\n"
+        message = (
+            f"Command: {' '.join(command)}\n"
+            f"Working directory: {working_directory or Path.cwd()}\n"
+            f"Failed to start application: {error}\n"
+        )
         print(message, file=sys.stderr, end="", flush=True)
         with application_log.open("wb") as log_file:
             log_file.write(message.encode("utf-8"))
@@ -56,8 +67,8 @@ def main():
         timed_out = False
 
     with application_log.open("wb") as log_file:
-        log_file.write(f"Command: {' '.join(args.command)}\n".encode("utf-8"))
-        log_file.write(f"Working directory: {args.cwd or Path.cwd()}\n\n".encode("utf-8"))
+        log_file.write(f"Command: {' '.join(command)}\n".encode("utf-8"))
+        log_file.write(f"Working directory: {working_directory or Path.cwd()}\n\n".encode("utf-8"))
         if not output:
             log_file.write(b"[Application produced no stdout or stderr during the smoke test.]\n")
         log_file.write(output)
