@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb xauth
+          sudo apt-get install -y libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb xauth glslang-tools
       - name: Configure
         run: |
           set -o pipefail
@@ -22,11 +22,25 @@ jobs:
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee build.log
-      - name: Smoke test Linux build
-        run: xvfb-run -a python3 .github/scripts/smoke_test.py build/build
+      - name: Prepare Linux artifact
+        run: |
+          set -o pipefail
+          {
+            mkdir -p dist/src
+            cp -R src/shaders dist/src/
+            cp build/build dist/learnopengl
+          } 2>&1 | tee package.log
+      - name: Test Linux artifact
+        run: xvfb-run -a python3 .github/scripts/test_artifact.py --binary dist/learnopengl --shader-dir dist/src/shaders --runtime-directory dist --runtime-smoke-test
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
-      - name: Upload Linux logs
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-linux
+          path: dist/
+          if-no-files-found: error
+      - name: Upload Linux build and test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -34,25 +48,17 @@ jobs:
           path: |
             configure.log
             build.log
-            smoke-test.log
+            package.log
+            test.log
           if-no-files-found: ignore
-      - name: Prepare Linux artifact
-        run: |
-          mkdir -p dist/src
-          cp -R src/shaders dist/src/
-          cp build/build dist/learnopengl
-      - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: learnopengl-linux
-          path: dist/
-          if-no-files-found: error
 
   macos:
     name: macOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install shader validator
+        run: brew install glslang
       - name: Configure
         run: |
           set -o pipefail
@@ -61,9 +67,23 @@ jobs:
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee build.log
-      - name: Smoke test macOS build
-        run: python3 .github/scripts/smoke_test.py build/build
-      - name: Upload macOS logs
+      - name: Prepare macOS artifact
+        run: |
+          set -o pipefail
+          {
+            mkdir -p dist/src
+            cp -R src/shaders dist/src/
+            cp build/build dist/learnopengl
+          } 2>&1 | tee package.log
+      - name: Test macOS artifact (binary and shaders)
+        run: python3 .github/scripts/test_artifact.py --binary dist/learnopengl --shader-dir dist/src/shaders
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-macos
+          path: dist/
+          if-no-files-found: error
+      - name: Upload macOS build and test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -71,19 +91,9 @@ jobs:
           path: |
             configure.log
             build.log
-            smoke-test.log
+            package.log
+            test.log
           if-no-files-found: ignore
-      - name: Prepare macOS artifact
-        run: |
-          mkdir -p dist/src
-          cp -R src/shaders dist/src/
-          cp build/build dist/learnopengl
-      - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: learnopengl-macos
-          path: dist/
-          if-no-files-found: error
 
   windows:
     name: Windows
@@ -101,6 +111,7 @@ jobs:
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-glslang
       - name: Configure
         run: |
           set -o pipefail
@@ -109,9 +120,23 @@ jobs:
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee build.log
-      - name: Smoke test Windows build
-        run: python .github/scripts/smoke_test.py build/build.exe
-      - name: Upload Windows logs
+      - name: Prepare Windows artifact
+        run: |
+          set -o pipefail
+          {
+            mkdir -p dist/src
+            cp -R src/shaders dist/src/
+            cp build/build.exe dist/learnopengl.exe
+          } 2>&1 | tee package.log
+      - name: Test Windows artifact (binary and shaders)
+        run: python .github/scripts/test_artifact.py --binary dist/learnopengl.exe --shader-dir dist/src/shaders
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-windows
+          path: dist/
+          if-no-files-found: error
+      - name: Upload Windows build and test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -119,16 +144,6 @@ jobs:
           path: |
             configure.log
             build.log
-            smoke-test.log
+            package.log
+            test.log
           if-no-files-found: ignore
-      - name: Prepare Windows artifact
-        run: |
-          mkdir -p dist/src
-          cp -R src/shaders dist/src/
-          cp build/build.exe dist/learnopengl.exe
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: learnopengl-windows
-          path: dist/
-          if-no-files-found: error
