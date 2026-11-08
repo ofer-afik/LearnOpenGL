@@ -14,5 +14,22 @@ Now it's a bit better:
 
 ![release_0-3-0](src_srcshot_readme2.png)
 
-Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.2.0)!
+Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.3.0)!
 
+## Controls
+Arrows: move on the xy plane (remember - in most graphics programming topics, y is up)
+Page up/down: move on z axis
+Left click / escape: lock/unlock mouse for game controls - 
+- Move for rotation
+- Scroll for FOV
+
+
+## Running on different platforms
+***KEEP THE `src` FOLDER!***
+### Linux
+Tested - there is no reason it shouldn't work!
+You might need to make the executable runnable, though:
+Right click file, enter properties, then enable it.
+
+### Windows/Mac
+It should work - tested through github runners, meaning I didn't find a way to test through actual GUI. It *should* work.
