@@ -41,3 +41,10 @@ target_link_libraries(build PRIVATE
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(build PRIVATE -static-libgcc -static-libstdc++)
 endif()
+
+add_custom_target(stage_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/assets"
+        "${CMAKE_CURRENT_BINARY_DIR}/src/assets"
+)
+add_dependencies(build stage_assets)

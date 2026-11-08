@@ -36,23 +36,22 @@ jobs:
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
-      - name: Smoke test Linux application
-        if: steps.build.outcome == 'success'
-        run: |
-          set -o pipefail
-          python scripts/smoke_test.py xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ./build/build 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package Linux application
         id: package
         if: steps.build.outcome == 'success'
         run: |
           set -o pipefail
           {
-            mkdir -p package/src
+            mkdir -p package/src/assets
             cp build/build package/build
-            cp -R src/assets/textures package/src/
-            cp -R src/assets/shaders package/src/
+            cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test Linux application
+        if: steps.package.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py --cwd package xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ./build 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
       - name: Upload Linux application
         if: steps.package.outcome == 'success'
@@ -66,8 +65,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-linux-logs
-          path: logs/
-          if-no-files-found: warn
+          path: ${{ github.workspace }}/logs/*.log
+          if-no-files-found: error
 
   macos:
     name: macOS
@@ -92,23 +91,22 @@ jobs:
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
-      - name: Smoke test macOS application
-        if: steps.build.outcome == 'success'
-        run: |
-          set -o pipefail
-          python scripts/smoke_test.py ./build/build 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package macOS application
         id: package
         if: steps.build.outcome == 'success'
         run: |
           set -o pipefail
           {
-            mkdir -p package/src
+            mkdir -p package/src/assets
             cp build/build package/build
-            cp -R src/assets/textures package/src/
-            cp -R src/assets/shaders package/src/
+            cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test macOS application
+        if: steps.package.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py --cwd package ./build 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
       - name: Upload macOS application
         if: steps.package.outcome == 'success'
@@ -122,8 +120,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-macos-logs
-          path: logs/
-          if-no-files-found: warn
+          path: ${{ github.workspace }}/logs/*.log
+          if-no-files-found: error
 
   windows:
     name: Windows
@@ -137,8 +135,12 @@ jobs:
         with:
           python-version: "3.x"
       - name: Prepare terminal log
-        run: "mkdir -p logs && : > logs/terminal.log && : > logs/application.log"
-        shell: bash
+        run: |
+          $logs = Join-Path $env:GITHUB_WORKSPACE "logs"
+          New-Item -ItemType Directory -Force -Path $logs | Out-Null
+          [System.IO.File]::WriteAllText((Join-Path $logs "terminal.log"), "")
+          [System.IO.File]::WriteAllText((Join-Path $logs "application.log"), "")
+        shell: pwsh
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -160,23 +162,22 @@ jobs:
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
-      - name: Smoke test Windows application
-        if: steps.build.outcome == 'success'
-        run: |
-          set -o pipefail
-          python scripts/smoke_test.py ./build/build.exe 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package Windows application
         id: package
         if: steps.build.outcome == 'success'
         run: |
           set -o pipefail
           {
-            mkdir -p package/src
+            mkdir -p package/src/assets
             cp build/build.exe package/build.exe
-            cp -R src/assets/textures package/src/
-            cp -R src/assets/shaders package/src/
+            cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test Windows application
+        if: steps.package.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py --cwd package ./build.exe 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
       - name: Upload Windows application
         if: steps.package.outcome == 'success'
@@ -190,5 +191,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-windows-logs
-          path: logs/
-          if-no-files-found: warn
+          path: ${{ github.workspace }}/logs/*.log
+          if-no-files-found: error
