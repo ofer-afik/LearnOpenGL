@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Prepare terminal log
-        run: "mkdir -p logs && : > logs/terminal.log"
+        run: "mkdir -p logs && : > logs/terminal.log && : > logs/application.log"
       - name: Install dependencies
         id: install_dependencies
         run: |
@@ -65,8 +65,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: learnopengl-linux-terminal-output
-          path: logs/terminal.log
+          name: learnopengl-linux-logs
+          path: logs/
           if-no-files-found: warn
 
   macos:
@@ -78,7 +78,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Prepare terminal log
-        run: "mkdir -p logs && : > logs/terminal.log"
+        run: "mkdir -p logs && : > logs/terminal.log && : > logs/application.log"
       - name: Configure
         id: configure
         run: |
@@ -121,8 +121,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: learnopengl-macos-terminal-output
-          path: logs/terminal.log
+          name: learnopengl-macos-logs
+          path: logs/
           if-no-files-found: warn
 
   windows:
@@ -137,7 +137,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Prepare terminal log
-        run: "mkdir -p logs && : > logs/terminal.log"
+        run: "mkdir -p logs && : > logs/terminal.log && : > logs/application.log"
         shell: bash
       - uses: msys2/setup-msys2@v2
         with:
@@ -189,6 +189,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: learnopengl-windows-terminal-output
-          path: logs/terminal.log
+          name: learnopengl-windows-logs
+          path: logs/
           if-no-files-found: warn
