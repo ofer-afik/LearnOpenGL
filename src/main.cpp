@@ -55,52 +55,58 @@ bool mouseMoved = false;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 void processInput(GLFWwindow *window);
 void updateDt();
 
-// Vertex data
-float vertices[180] = {
-    -10.0f, -10.0f, -10.0f,  0.0f, 0.0f,
-     10.0f, -10.0f, -10.0f,  1.0f, 0.0f,
-     10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
-     10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f, 1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, 0.0f,
-    
-    -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-    10.0f, -10.0f,  10.0f,  1.0f, 0.0f,
-    10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
-    10.0f,  10.0f,  10.0f,  1.0f, 1.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f, 1.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-    
-    -10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
-    -10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-    -10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
+float vertices[] = {
+    // Front face
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-     10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
-     10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
-     10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
-     10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
-     10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-     10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
+    // Back face
+     0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    -10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
-     10.0f, -10.0f, -10.0f,  1.0f, 1.0f,
-     10.0f, -10.0f,  10.0f,  1.0f, 0.0f,
-     10.0f, -10.0f,  10.0f,  1.0f, 0.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f, 0.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, 1.0f,
+    // Left face
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    -10.0f,  10.0f, -10.0f,  0.0f, 1.0f,
-     10.0f,  10.0f, -10.0f,  1.0f, 1.0f,
-     10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
-     10.0f,  10.0f,  10.0f,  1.0f, 0.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f, 0.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f, 1.0f
+    // Right face
+     0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+
+    // Top face
+    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+
+    // Bottom face
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f
 };
 float dt;
 float lastFrame;
@@ -149,7 +155,7 @@ int main()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     // Shaders
-    Shader shader = Shader("src/assets/shaders/shader.vs", "src/assets/shaders/shader.fs");
+    Shader shader = Shader("src/assets/shaders/objectShader/objectShader.vs", "src/assets/shaders/objectShader/objectShader.fs");
 
     // Z-Buffer
     glEnable(GL_DEPTH_TEST);
