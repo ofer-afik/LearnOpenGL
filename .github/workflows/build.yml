@@ -8,48 +8,122 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Prepare terminal log
+        run: "mkdir -p logs && : > logs/terminal.log"
       - name: Install dependencies
+        id: install_dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+          set -o pipefail
+          {
+            sudo apt-get update
+            sudo apt-get install -y libgl1-mesa-dev libgl1-mesa-dri libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb xauth
+          } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
       - name: Configure
-        run: cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
-      - name: Build
-        run: cmake --build build --parallel
-      - name: Package Linux application
+        id: configure
+        if: steps.install_dependencies.outcome == 'success'
         run: |
-          mkdir -p package/src
-          cp build/build package/build
-          cp -R src/assets/textures package/src/
-          cp -R src/assets/shaders package/src/
+          set -o pipefail
+          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Build
+        id: build
+        if: steps.configure.outcome == 'success'
+        run: |
+          set -o pipefail
+          cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test Linux application
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ./build/build 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Package Linux application
+        id: package
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          {
+            mkdir -p package/src
+            cp build/build package/build
+            cp -R src/assets/textures package/src/
+            cp -R src/assets/shaders package/src/
+          } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
       - name: Upload Linux application
+        if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-linux
           path: package/
           if-no-files-found: error
+      - name: Upload Linux terminal log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-linux-terminal-output
+          path: logs/terminal.log
+          if-no-files-found: warn
 
   macos:
     name: macOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Prepare terminal log
+        run: "mkdir -p logs && : > logs/terminal.log"
       - name: Configure
-        run: cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
-      - name: Build
-        run: cmake --build build --parallel
-      - name: Package macOS application
+        id: configure
         run: |
-          mkdir -p package/src
-          cp build/build package/build
-          cp -R src/assets/textures package/src/
-          cp -R src/assets/shaders package/src/
+          set -o pipefail
+          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Build
+        id: build
+        if: steps.configure.outcome == 'success'
+        run: |
+          set -o pipefail
+          cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test macOS application
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py ./build/build 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Package macOS application
+        id: package
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          {
+            mkdir -p package/src
+            cp build/build package/build
+            cp -R src/assets/textures package/src/
+            cp -R src/assets/shaders package/src/
+          } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
       - name: Upload macOS application
+        if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-macos
           path: package/
           if-no-files-found: error
+      - name: Upload macOS terminal log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-macos-terminal-output
+          path: logs/terminal.log
+          if-no-files-found: warn
 
   windows:
     name: Windows
@@ -59,6 +133,12 @@ jobs:
         shell: msys2 {0}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Prepare terminal log
+        run: "mkdir -p logs && : > logs/terminal.log"
+        shell: bash
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -68,18 +148,47 @@ jobs:
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DLEARNOPENGL_FETCH_STATIC_GLFW=ON
-      - name: Build
-        run: cmake --build build --parallel
-      - name: Package Windows application
+        id: configure
         run: |
-          mkdir -p package/src
-          cp build/build.exe package/build.exe
-          cp -R src/assets/textures package/src/
-          cp -R src/assets/shaders package/src/
+          set -o pipefail
+          cmake -S . -B build -G Ninja -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Build
+        id: build
+        if: steps.configure.outcome == 'success'
+        run: |
+          set -o pipefail
+          cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Smoke test Windows application
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          python scripts/smoke_test.py ./build/build.exe 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
+      - name: Package Windows application
+        id: package
+        if: steps.build.outcome == 'success'
+        run: |
+          set -o pipefail
+          {
+            mkdir -p package/src
+            cp build/build.exe package/build.exe
+            cp -R src/assets/textures package/src/
+            cp -R src/assets/shaders package/src/
+          } 2>&1 | tee -a logs/terminal.log
+        continue-on-error: true
       - name: Upload Windows application
+        if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: learnopengl-windows
           path: package/
           if-no-files-found: error
+      - name: Upload Windows terminal log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learnopengl-windows-terminal-output
+          path: logs/terminal.log
+          if-no-files-found: warn
