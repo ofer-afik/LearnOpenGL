@@ -4,6 +4,7 @@ in vec3 normal;
 in vec3 fragPos;
 
 uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 uniform vec4 baseColor;
 uniform vec4 lightColor;

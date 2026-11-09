@@ -40,7 +40,7 @@ glm::vec4 objectColor = glm::vec4(1.0f);
 
 glm::vec3 lightSourcePos = glm::vec3(75.0f, 25.0f, 200.0f);
 glm::vec4 lightSrcClr = glm::vec4(0.95f, 0.80f, 0.42f, 1.0f);
-// glm::vec4 lightSrcClr = glm::vec4(0.0f);
+glm::vec4 lightSpecClr = glm::vec4(lightSrcClr / 2.0f);
 
 glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.2f, 1.0f);
 
@@ -48,6 +48,10 @@ glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.2f, 1.0f);
 glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
 glm::vec3 camTrg = glm::vec3(0.0f, 0.0f, 39.0f);
 glm::vec2 camRot = glm::vec2(0.0f, 0.0f);
+glm::vec3 camDir;
+glm::vec3 camDirRt;
+glm::vec3 camDirUp;
+
 float camSpd = 200.0;
 glm::vec2 lastMousePos = glm::vec2(400.0f, 400.0f);
 
@@ -200,9 +204,9 @@ int main()
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
-        glm::vec3 camDir = -glm::normalize(camPos - camTrg);
-        glm::vec3 camDirRt = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), -camDir));
-        glm::vec3 camDirUp = glm::normalize(glm::cross(-camDir, camDirRt));
+        camDir = -glm::normalize(camPos - camTrg);
+        camDirRt = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), -camDir));
+        camDirUp = glm::normalize(glm::cross(-camDir, camDirRt));
 
         view = glm::lookAt(camPos,
                            camTrg,
@@ -215,6 +219,7 @@ int main()
         objectShader.setVec("ambientColor", lightAmbClr);
 
         objectShader.setVec("lightPos", lightSourcePos);
+        objectShader.setVec("viewPos", camPos);
 
         objectShader.setMat4("view", view);
         objectShader.setMat4("projection", projection);
@@ -320,40 +325,45 @@ void processInput(GLFWwindow *window)
     }
 
     // Movement
+    glm::vec3 dir;
+    dir.x = std::cos(camRot.x) * std::sin(camRot.y);
+    dir.y = std::sin(camRot.x);
+    dir.z = -std::cos(camRot.x) * std::cos(camRot.y);
+
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    {
-        camPos.x -= camSpd * dt;
-        camTrg.x -= camSpd * dt;
+    {    
+        camPos -= camDirRt * camSpd * dt;
+        camTrg -= camDirRt * camSpd * dt;
     }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        camPos.x += camSpd * dt;
-        camTrg.x += camSpd * dt;
+        camPos += camDirRt * camSpd * dt;
+        camTrg += camDirRt * camSpd * dt;
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        camPos.y += camSpd * dt;
-        camTrg.y += camSpd * dt;
+        camPos += camDirUp * camSpd * dt;
+        camTrg += camDirUp * camSpd * dt;
     }
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        camPos.y -= camSpd * dt;
-        camTrg.y -= camSpd * dt;
+        camPos -= camDirUp * camSpd * dt;
+        camTrg -= camDirUp * camSpd * dt;
     }
 
     if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
     {
-        camPos.z += camSpd * dt;
-        camTrg.z += camSpd * dt;
+        camPos -= camDir * camSpd * dt;
+        camTrg -= camDir * camSpd * dt;
     }
         
     if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
     {
-        camPos.z -= camSpd * dt;
-        camTrg.z -= camSpd * dt;
+        camPos += camDir * camSpd * dt;
+        camTrg += camDir * camSpd * dt;
     }
 }
 
