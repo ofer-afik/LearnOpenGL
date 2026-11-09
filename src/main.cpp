@@ -35,14 +35,12 @@ glm::vec3 cubePositions[10] {
     glm::vec3(-32.5f,  25.0f, -37.5f),
     glm::vec3(  0.0f,   0.0f,   0.0f),
 };
-// glm::vec4 objectColor = glm::vec4(1.0f, 0.5f, 0.31f, 1.0f);
-glm::vec4 objectColor = glm::vec4(1.0f);
+glm::vec4 objectColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 glm::vec3 lightSourcePos = glm::vec3(75.0f, 25.0f, 200.0f);
 glm::vec4 lightSrcClr = glm::vec4(0.95f, 0.80f, 0.42f, 1.0f);
-glm::vec4 lightSpecClr = glm::vec4(lightSrcClr / 2.0f);
 
-glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.2f, 1.0f);
+glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.5f, 1.0f);
 
 // Camera variables
 glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);

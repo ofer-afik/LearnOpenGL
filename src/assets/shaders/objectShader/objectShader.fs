@@ -16,7 +16,12 @@ void main() {
     vec3 norm = normalize(normal);
     vec3 lightDir = normalize(lightPos - fragPos);
 
-    float diffuse = max(dot(norm, lightDir), 0.0);
+    vec3 viewDir = normalize(viewPos - fragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
 
-    FragColor = baseColor * (ambientColor + diffuse * lightColor);
+    vec4 specular = lightColor * pow(max(dot(viewDir, reflectDir), 0.0f), 64);
+
+    vec4 diffuse = max(dot(norm, lightDir), 0.0) * lightColor;
+
+    FragColor = baseColor * (ambientColor + diffuse + specular);
 }
