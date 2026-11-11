@@ -35,12 +35,7 @@ glm::vec3 cubePositions[10] {
     glm::vec3(-32.5f,  25.0f, -37.5f),
     glm::vec3(  0.0f,   0.0f,   0.0f),
 };
-glm::vec4 objectColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-glm::vec3 lightSourcePos = glm::vec3(75.0f, 25.0f, 200.0f);
-glm::vec4 lightSrcClr = glm::vec4(0.95f, 0.80f, 0.42f, 1.0f);
-
-glm::vec4 lightAmbClr = glm::vec4(0.1f, 0.14f, 0.5f, 1.0f);
+glm::vec4 objectColor = glm::vec4(1.0f, 0.5f, 0.31f, 1.0f);
 
 // Camera variables
 glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
@@ -68,54 +63,54 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void updateDt();
 
-float vertices[216] = {
+float vertices[288] = {
     // Back face
-    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
-     10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+    -10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
     // Front face
-    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
-     10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+    -10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
     // Left face
-    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
-    -10.0f,  10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
-    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
-    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,
-    -10.0f, -10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
-    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,
+    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+    -10.0f,  10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+    -10.0f, -10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
 
     // Right face
-     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
-     10.0f,  10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+     10.0f,  10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
 
     // Bottom face
-    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+     10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+    -10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
 
     // Top face
-    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,
+    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+     10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+    -10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
 };
 
 float dt;
@@ -124,6 +119,9 @@ float lastFrame;
 // Main function
 int main()
 {
+    // STB Image Loader set up
+    stbi_set_flip_vertically_on_load(true);
+
     // GLFW Initialization
     glfwInit();
 
@@ -166,8 +164,54 @@ int main()
 
     // Shaders
     Shader objectShader = Shader("src/assets/shaders/objectShader/objectShader.vs", "src/assets/shaders/objectShader/objectShader.fs");
-
     Shader lightShader = Shader("src/assets/shaders/lightShader/lightShader.vs", "src/assets/shaders/lightShader/lightShader.fs");
+
+    // Textures
+    Light light = Light{glm::vec3(75.0f, 25.0f, 200.0f),
+                        glm::vec3(0.0215f, 0.1745f, 0.0125f),
+                        glm::vec3(1.0f)};
+
+    Material material;
+    material.shininess = 76.0f;
+
+    glGenTextures(1, &material.diff);
+    glBindTexture(GL_TEXTURE_2D, material.diff);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    int width; int height; int nrChannels;
+    unsigned char *data = stbi_load("src/assets/textures/images/emerald_in_gold_diff.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    glGenTextures(1, &material.spec);
+    glBindTexture(GL_TEXTURE_2D, material.spec);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    data = stbi_load("src/assets/textures/images/emerald_in_gold_spec.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
     // Z-Buffer
     glEnable(GL_DEPTH_TEST);
@@ -181,10 +225,12 @@ int main()
     unsigned int cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glBindVertexArray(cubeVAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     // Render loop
     while (!glfwWindowShouldClose(window))
@@ -211,16 +257,18 @@ int main()
                            camDirUp);
         projection = glm::perspective(glm::radians(camFov), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, material.diff);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, material.spec);
+
         objectShader.Use();
-        objectShader.setVec("baseColor", objectColor);
-        objectShader.setVec("lightColor", lightSrcClr);
-        objectShader.setVec("ambientColor", lightAmbClr);
+        objectShader.Set("material", material, GL_TEXTURE0, GL_TEXTURE1);
+        objectShader.Set("light", light);
+        objectShader.Set("viewPos", camPos);
 
-        objectShader.setVec("lightPos", lightSourcePos);
-        objectShader.setVec("viewPos", camPos);
-
-        objectShader.setMat4("view", view);
-        objectShader.setMat4("projection", projection);
+        objectShader.Set("view", view);
+        objectShader.Set("projection", projection);
 
         for (int i = 0; i < 10; i++)
         {
@@ -229,17 +277,21 @@ int main()
             model = glm::rotate(model,
                                 glm::radians(i * 20.0f + 45.0f),
                                 glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
-            objectShader.setMat4("model", model);
+            objectShader.Set("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
+        light.pos = glm::vec3(std::cos(glfwGetTime()) * glm::length(glm::vec2(light.pos.x, light.pos.z)),
+                              light.pos.y,
+                              std::sin(glfwGetTime()) * glm::length(glm::vec2(light.pos.x, light.pos.z)));
+
         lightShader.Use();
-        lightShader.setVec("color", lightSrcClr);
-        lightShader.setMat4("view", view);
-        lightShader.setMat4("projection", projection);
+        lightShader.Set("light", light);
+        lightShader.Set("view", view);
+        lightShader.Set("projection", projection);
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, lightSourcePos);
-        lightShader.setMat4("model", model);
+        model = glm::translate(model, light.pos);
+        lightShader.Set("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         
 

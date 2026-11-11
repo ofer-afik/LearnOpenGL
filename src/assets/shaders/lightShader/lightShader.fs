@@ -1,9 +1,15 @@
 #version 330 core
 
-uniform vec4 color;
+struct Light {
+    vec3 pos;
+    vec3 amb;
+    vec3 color;
+};
+
+uniform Light light;
 
 out vec4 FragColor;
 
 void main() {
-    FragColor = color;
+    FragColor = vec4(light.color, 1.0f);
 }

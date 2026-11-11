@@ -8,6 +8,18 @@
 #include <sstream>
 #include <iostream>
 
+struct Light {
+    glm::vec3 pos;
+    glm::vec3 amb;
+    glm::vec3 color;
+};
+
+struct Material {
+    unsigned int diff;
+    unsigned int spec;
+    float shininess;
+};
+
 class Shader
 {
 public:
@@ -91,32 +103,45 @@ public:
     }
     
     unsigned int ID;
+
     void Use() 
     {
         glUseProgram(ID);
     };
-    void setBool(const std::string &name, bool value) const
+    void Set(const std::string &name, bool value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
-    void setInt(const std::string &name, int value) const
+    void Set(const std::string &name, int value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
-    void setFloat(const std::string &name, float value) const
+    void Set(const std::string &name, float value) const
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), (float)value);
     }
-    void setMat4(const std::string &name, glm::mat4 value) const
+    void Set(const std::string &name, glm::mat4 value) const
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
     }
-    void setVec(const std::string &name, glm::vec4 value) const
+    void Set(const std::string &name, glm::vec4 value) const
     {
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
     }
-    void setVec(const std::string &name, glm::vec3 value) const
+    void Set(const std::string &name, glm::vec3 value) const
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
+    }
+    void Set(const std::string &name, Material value, unsigned int diff,  unsigned int spec) const
+    {
+        glUniform1i(glGetUniformLocation(ID, (name + ".diff").c_str()), diff);
+        glUniform1i(glGetUniformLocation(ID, (name + ".spec").c_str()), spec);
+        glUniform1f(glGetUniformLocation(ID, (name + ".shininess").c_str()), (float)value.shininess);
+    }
+    void Set(const std::string &name, Light value) const
+    {
+        glUniform3fv(glGetUniformLocation(ID, (name + ".pos").c_str()), 1, glm::value_ptr(value.pos));
+        glUniform3fv(glGetUniformLocation(ID, (name + ".amb").c_str()), 1, glm::value_ptr(value.amb));
+        glUniform3fv(glGetUniformLocation(ID, (name + ".color").c_str()), 1, glm::value_ptr(value.color));
     }
 };
