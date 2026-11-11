@@ -3,7 +3,7 @@
 struct Material {
     sampler2D diff;
     sampler2D spec;
-    float shininess;
+    sampler2D shininess;
 };
 
 struct Light {
@@ -29,7 +29,7 @@ void main() {
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
 
-    vec3 specular = light.color * vec3(texture(material.spec, texCoord)) * pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+    vec3 specular = light.color * vec3(texture(material.spec, texCoord) * pow(max(dot(viewDir, reflectDir), 0.0f), 128.0f * float(texture(material.shininess, texCoord))));
 
     vec3 diffuse = max(dot(norm, lightDir), 0.0) * light.color * vec3(texture(material.diff, texCoord));
 

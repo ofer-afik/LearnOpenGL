@@ -168,7 +168,7 @@ int main()
 
     // Textures
     Light light = Light{glm::vec3(75.0f, 25.0f, 200.0f),
-                        glm::vec3(0.0215f, 0.1745f, 0.0125f),
+                        glm::vec3(0.1f, 0.1f, 0.1f),
                         glm::vec3(1.0f)};
 
     Material material;
@@ -206,6 +206,24 @@ int main()
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    glGenTextures(1, &material.shininess);
+    glBindTexture(GL_TEXTURE_2D, material.shininess);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+    data = stbi_load("src/assets/textures/images/emerald_in_gold_shine.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     }
     else
     {
@@ -261,9 +279,11 @@ int main()
         glBindTexture(GL_TEXTURE_2D, material.diff);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, material.spec);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, material.shininess);
 
         objectShader.Use();
-        objectShader.Set("material", material, GL_TEXTURE0, GL_TEXTURE1);
+        objectShader.Set("material", material, GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2);
         objectShader.Set("light", light);
         objectShader.Set("viewPos", camPos);
 

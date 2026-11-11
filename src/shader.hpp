@@ -17,7 +17,7 @@ struct Light {
 struct Material {
     unsigned int diff;
     unsigned int spec;
-    float shininess;
+    unsigned int shininess;
 };
 
 class Shader
@@ -132,11 +132,11 @@ public:
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
     }
-    void Set(const std::string &name, Material value, unsigned int diff,  unsigned int spec) const
+    void Set(const std::string &name, Material value, unsigned int diff,  unsigned int spec, unsigned int shininess) const
     {
         glUniform1i(glGetUniformLocation(ID, (name + ".diff").c_str()), diff);
         glUniform1i(glGetUniformLocation(ID, (name + ".spec").c_str()), spec);
-        glUniform1f(glGetUniformLocation(ID, (name + ".shininess").c_str()), (float)value.shininess);
+        glUniform1i(glGetUniformLocation(ID, (name + ".shininess").c_str()), shininess);
     }
     void Set(const std::string &name, Light value) const
     {
