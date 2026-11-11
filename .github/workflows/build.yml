@@ -44,9 +44,8 @@ jobs:
           {
             mkdir -p package/src/assets
             cp build/build package/build
-            cp -R src/assets/shaders/ package/src/assets/shaders/
-            cp -R src/assets/textures/images/ package/src/assets/textures/images/
-            } 2>&1 | tee -a logs/terminal.log
+            cp -R src/assets/. package/src/assets/
+          } 2>&1 | tee -a logs/terminal.log
         continue-on-error: true
       - name: Smoke test Linux application
         if: steps.package.outcome == 'success'
