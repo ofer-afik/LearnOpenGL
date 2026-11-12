@@ -1,7 +1,7 @@
 #version 330 core
 
 struct Light {
-    vec3 pos;
+    vec3 dir;
     vec3 amb;
     vec3 color;
 };

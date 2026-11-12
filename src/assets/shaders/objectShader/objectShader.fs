@@ -7,7 +7,7 @@ struct Material {
 };
 
 struct Light {
-    vec3 pos;
+    vec3 dir;
     vec3 amb;
     vec3 color;
 };
@@ -24,7 +24,8 @@ out vec4 FragColor;
 
 void main() {
     vec3 norm = normalize(normal);
-    vec3 lightDir = normalize(light.pos - fragPos);
+    // vec3 lightDir = normalize(light.pos - fragPos);
+    vec3 lightDir = normalize(-light.dir);
 
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
