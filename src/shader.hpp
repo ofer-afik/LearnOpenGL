@@ -9,9 +9,12 @@
 #include <iostream>
 
 struct Light {
-    glm::vec3 dir;
+    glm::vec3 pos;
     glm::vec3 amb;
     glm::vec3 color;
+
+    float linear;
+    float quadratic;
 };
 
 struct Material {
@@ -140,8 +143,10 @@ public:
     }
     void Set(const std::string &name, Light value) const
     {
-        glUniform3fv(glGetUniformLocation(ID, (name + ".dir").c_str()), 1, glm::value_ptr(value.dir));
+        glUniform3fv(glGetUniformLocation(ID, (name + ".pos").c_str()), 1, glm::value_ptr(value.pos));
         glUniform3fv(glGetUniformLocation(ID, (name + ".amb").c_str()), 1, glm::value_ptr(value.amb));
         glUniform3fv(glGetUniformLocation(ID, (name + ".color").c_str()), 1, glm::value_ptr(value.color));
+        glUniform1f(glGetUniformLocation(ID, (name + ".linear").c_str()), (float)value.linear);
+        glUniform1f(glGetUniformLocation(ID, (name + ".quadratic").c_str()), (float)value.quadratic);
     }
 };

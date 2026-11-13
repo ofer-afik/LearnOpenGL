@@ -167,10 +167,10 @@ int main()
     Shader lightShader = Shader("src/assets/shaders/lightShader/lightShader.vs", "src/assets/shaders/lightShader/lightShader.fs");
 
     // Textures
-    Light light = Light{//glm::vec3(75.0f, 25.0f, 150.0f),
-                        glm::vec3(0.0f, -1.0f, 0.0f),
+    Light light = Light{glm::vec3(75.0f, 25.0f, 200.0f),
                         glm::vec3(0.1f, 0.1f, 0.1f),
-                        glm::vec3(1.0f)};
+                        glm::vec3(1.0f),
+                        0.0045f, 0.000075f};
 
     Material material;
     material.shininess = 76.0f;
@@ -302,14 +302,19 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // lightShader.Use();
-        // lightShader.Set("light", light);
-        // lightShader.Set("view", view);
-        // lightShader.Set("projection", projection);
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, light.dir);
-        // lightShader.Set("model", model);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        light.pos = glm::vec3(std::cos(glfwGetTime()) * glm::length(glm::vec2(light.pos.x, light.pos.z)),
+                              light.pos.y,
+                              std::sin(glfwGetTime()) * glm::length(glm::vec2(light.pos.x, light.pos.z)));
+
+        lightShader.Use();
+        lightShader.Set("light", light);
+        lightShader.Set("view", view);
+        lightShader.Set("projection", projection);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, light.pos);
+        lightShader.Set("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
 
         // Rendering and callback events
         glfwSwapBuffers(window);
