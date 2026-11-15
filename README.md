@@ -35,7 +35,7 @@ For a local build, install GLFW, Assimp, and the platform's OpenGL development f
 cmake -S . -B build
 cmake --build build
 ```
-The GitHub workflow builds GLFW and Assimp (including Assimp's bundled zlib) as static libraries and statically links the GNU C++ runtime where supported. OpenGL drivers and platform/window-system libraries are supplied by the operating system and cannot be statically bundled.
+The GitHub workflow builds GLFW and Assimp as static libraries, bundles zlib on Windows and Linux, and statically links the GNU C++ runtime where supported. macOS uses its system zlib because Assimp's bundled zlib is incompatible with the current Apple SDK. OpenGL drivers and platform/window-system libraries are supplied by the operating system and cannot be statically bundled.
 
 ### Linux
 Tested - there is no reason it shouldn't work!
@@ -43,4 +43,4 @@ You might need to make the executable runnable, though:
 Right click file, enter properties, then enable it.
 
 ### Windows/Mac
-It should work - tested through github runners, meaning I didn't find a way to test through actual GUI. It *should* work.
+It should work - tested through GitHub runners for building and package contents, but those hosted runners cannot create an interactive GLFW window for a runtime smoke test.
