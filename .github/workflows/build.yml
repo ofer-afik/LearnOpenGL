@@ -21,21 +21,18 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgl1-mesa-dev libgl1-mesa-dri libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev xvfb xauth
           } 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Configure
         id: configure
         if: steps.install_dependencies.outcome == 'success'
         run: |
           set -o pipefail
-          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
+          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON -DLEARNOPENGL_FETCH_STATIC_ASSIMP=ON -DLEARNOPENGL_STATIC_CXX_RUNTIME=ON 2>&1 | tee -a logs/terminal.log
       - name: Build
         id: build
         if: steps.configure.outcome == 'success'
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package Linux application
         id: package
         if: steps.build.outcome == 'success'
@@ -46,13 +43,11 @@ jobs:
             cp build/build package/build
             cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Smoke test Linux application
         if: steps.package.outcome == 'success'
         run: |
           set -o pipefail
           python scripts/smoke_test.py --cwd package xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ./build 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Upload Linux application
         if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -82,15 +77,13 @@ jobs:
         id: configure
         run: |
           set -o pipefail
-          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
+          cmake -S . -B build -DLEARNOPENGL_FETCH_STATIC_GLFW=ON -DLEARNOPENGL_FETCH_STATIC_ASSIMP=ON -DLEARNOPENGL_STATIC_CXX_RUNTIME=ON 2>&1 | tee -a logs/terminal.log
       - name: Build
         id: build
         if: steps.configure.outcome == 'success'
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package macOS application
         id: package
         if: steps.build.outcome == 'success'
@@ -101,7 +94,6 @@ jobs:
             cp build/build package/build
             cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Validate macOS package
         if: steps.package.outcome == 'success'
         run: |
@@ -157,15 +149,13 @@ jobs:
         id: configure
         run: |
           set -o pipefail
-          cmake -S . -B build -G Ninja -DLEARNOPENGL_FETCH_STATIC_GLFW=ON 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
+          cmake -S . -B build -G Ninja -DLEARNOPENGL_FETCH_STATIC_GLFW=ON -DLEARNOPENGL_FETCH_STATIC_ASSIMP=ON -DLEARNOPENGL_STATIC_CXX_RUNTIME=ON 2>&1 | tee -a logs/terminal.log
       - name: Build
         id: build
         if: steps.configure.outcome == 'success'
         run: |
           set -o pipefail
           cmake --build build --parallel 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Package Windows application
         id: package
         if: steps.build.outcome == 'success'
@@ -176,13 +166,11 @@ jobs:
             cp build/build.exe package/build.exe
             cp -R src/assets/. package/src/assets/
           } 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Smoke test Windows application
         if: steps.package.outcome == 'success'
         run: |
           set -o pipefail
           python scripts/smoke_test.py --cwd package ./build.exe 2>&1 | tee -a logs/terminal.log
-        continue-on-error: true
       - name: Upload Windows application
         if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4

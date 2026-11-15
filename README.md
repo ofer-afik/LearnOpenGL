@@ -10,9 +10,11 @@ First release was a very interesting app, with a triangle:
 
 ![past_release](src_scrshot_readme1.png)
 
-Now it's a bit better:
+Later it was a bit better:
 
 ![release_0-3-0](src_srcshot_readme2.png)
+
+And now, the current version is best.
 
 Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.3.0)!
 
@@ -26,6 +28,15 @@ Left click / escape: lock/unlock mouse for game controls -
 
 ## Running on different platforms
 ***KEEP THE `src` FOLDER!***
+
+### Building from source
+For a local build, install GLFW, Assimp, and the platform's OpenGL development files, then run:
+```sh
+cmake -S . -B build
+cmake --build build
+```
+The GitHub workflow builds GLFW and Assimp (including Assimp's bundled zlib) as static libraries and statically links the GNU C++ runtime where supported. OpenGL drivers and platform/window-system libraries are supplied by the operating system and cannot be statically bundled.
+
 ### Linux
 Tested - there is no reason it shouldn't work!
 You might need to make the executable runnable, though:

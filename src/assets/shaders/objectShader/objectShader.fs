@@ -25,8 +25,9 @@ in vec3 fragPos;
 in vec2 texCoord;
 
 uniform vec3 viewPos;
-uniform Material material;
 uniform Light light;
+
+uniform Material material;
 
 out vec4 FragColor;
 
@@ -40,7 +41,7 @@ void main()
 
     vec3 specular = light.color * vec3(texture(material.spec, texCoord) * pow(max(dot(viewDir, reflectDir), 0.0f), 128.0f * float(texture(material.shininess, texCoord))));
     vec3 ambient = light.amb * vec3(texture(material.diff, texCoord));
-    vec3 diffuse = max(dot(norm, lightDir), 0.0) * light.color * vec3(texture(material.diff, texCoord));
+    vec3 diffuse = max(dot(norm, lightDir), 0.0) * light.color * float(texture(material.diff, texCoord));
 
     float distance = length(light.pos - fragPos);
     float attenuation = 1.0f / (1.0f + light.linear * distance + light.quadratic * distance * distance);

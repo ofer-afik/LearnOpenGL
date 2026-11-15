@@ -8,7 +8,8 @@
 #include <sstream>
 #include <iostream>
 
-struct SpotLight {
+struct SpotLight
+{
     glm::vec3 pos;
     glm::vec3 dir;
     float innerCutOff;
@@ -21,7 +22,8 @@ struct SpotLight {
     float quadratic;
 };
 
-struct PointLight {
+struct PointLight
+{
     glm::vec3 pos;
     glm::vec3 amb;
     glm::vec3 color;
@@ -29,12 +31,6 @@ struct PointLight {
     float linear;
     float quadratic;
     
-};
-
-struct Material {
-    unsigned int diff;
-    unsigned int spec;
-    unsigned int shininess;
 };
 
 class Shader
@@ -148,12 +144,6 @@ public:
     void Set(const std::string &name, glm::vec3 value) const
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
-    }
-    void Set(const std::string &name, Material value, unsigned int diff,  unsigned int spec, unsigned int shininess) const
-    {
-        glUniform1i(glGetUniformLocation(ID, (name + ".diff").c_str()), diff);
-        glUniform1i(glGetUniformLocation(ID, (name + ".spec").c_str()), spec);
-        glUniform1i(glGetUniformLocation(ID, (name + ".shininess").c_str()), shininess);
     }
     void Set(const std::string &name, SpotLight value) const
     {

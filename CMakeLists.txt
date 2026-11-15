@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(OpenGL REQUIRED)
 
 option(LEARNOPENGL_FETCH_STATIC_GLFW "Build GLFW statically from source" OFF)
+option(LEARNOPENGL_FETCH_STATIC_ASSIMP "Build Assimp and its bundled zlib statically from source" OFF)
+option(LEARNOPENGL_STATIC_CXX_RUNTIME "Statically link the GNU C/C++ runtime libraries" OFF)
+
 if(LEARNOPENGL_FETCH_STATIC_GLFW)
     include(FetchContent)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -25,20 +28,42 @@ else()
     find_package(glfw3 3.3 REQUIRED)
 endif()
 
+if(LEARNOPENGL_FETCH_STATIC_ASSIMP)
+    include(FetchContent)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
+    set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG v5.4.3
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(assimp)
+else()
+    find_package(assimp REQUIRED)
+endif()
+
 add_executable(build
     src/main.cpp
     glad.c
+    src/model.hpp
 )
 
 target_include_directories(build PRIVATE ./include)
 
 target_link_libraries(build PRIVATE
     glfw
+    assimp::assimp
     OpenGL::GL
     ${CMAKE_DL_LIBS}
 )
 
-if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if(LEARNOPENGL_STATIC_CXX_RUNTIME AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(build PRIVATE -static-libgcc -static-libstdc++)
 endif()
 

@@ -8,6 +8,8 @@
 // C++ Inclusions
 #include <iostream>
 #include <cmath>
+#include <chrono>
+#include <thread>
 
 // Include GLAD first, because it includes multiple definitions required for next header files
 #include <glad/glad.h>
@@ -18,24 +20,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "model.hpp"
 #include "shader.hpp"
 
 int WINDOW_WIDTH = 800;
 int WINDOW_HEIGHT = 800;
-
-glm::vec3 cubePositions[10] {
-    glm::vec3( 80.0f, 100.0f, -20.0f),
-    glm::vec3(-37.5f, -55.0f, -62.5f),
-    glm::vec3(-120.0f, -50.0f, -82.5f),
-    glm::vec3( 60.0f, -10.0f, -87.5f),
-    glm::vec3(-42.5f, 150.0f, -112.5f),
-    glm::vec3( 32.5f, -50.0f, -62.5f),
-    glm::vec3( 37.5f,  50.0f, -62.5f),
-    glm::vec3( 37.5f,   5.0f, -37.5f),
-    glm::vec3(-32.5f,  25.0f, -37.5f),
-    glm::vec3(  0.0f,   0.0f,   0.0f),
-};
-glm::vec4 objectColor = glm::vec4(1.0f, 0.5f, 0.31f, 1.0f);
 
 // Camera variables
 glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 40.0f);
@@ -62,56 +51,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 void updateDt();
-
-float vertices[288] = {
-    // Back face
-    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-    // Front face
-    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-    // Left face
-    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-    -10.0f,  10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-    -10.0f, -10.0f, -10.0f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-    -10.0f, -10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-    -10.0f,  10.0f,  10.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-
-    // Right face
-     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-     10.0f,  10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-
-    // Bottom face
-    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-     10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-     10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-    -10.0f, -10.0f,  10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-    -10.0f, -10.0f, -10.0f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-
-    // Top face
-    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-     10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-     10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-    -10.0f,  10.0f,  10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-    -10.0f,  10.0f, -10.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-};
 
 float dt;
 float lastFrame;
@@ -142,6 +81,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
     glfwSetCursorPos(window, 400.0, 400.0);
 
     // Initialize GLAD
@@ -164,8 +104,12 @@ int main()
 
     // Shaders
     Shader objectShader = Shader("src/assets/shaders/objectShader/objectShader.vs", "src/assets/shaders/objectShader/objectShader.fs");
+    objectShader.Use();
+    objectShader.Set("material.diff", 0);
+    objectShader.Set("material.spec", 1);
+    objectShader.Set("material.shininess", 2);
 
-    // Textures
+    // Light source
     SpotLight light = SpotLight{camPos,
                                 camDir,
                                 15.0f,
@@ -174,84 +118,12 @@ int main()
                                 glm::vec3(1.0f),
                                 0.0045f, 0.000075f};
 
-    Material material;
-    material.shininess = 76.0f;
-
-    glGenTextures(1, &material.diff);
-    glBindTexture(GL_TEXTURE_2D, material.diff);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-
-    int width; int height; int nrChannels;
-    unsigned char *data = stbi_load("src/assets/textures/images/emerald_in_gold_diff.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glGenTextures(1, &material.spec);
-    glBindTexture(GL_TEXTURE_2D, material.spec);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-
-    data = stbi_load("src/assets/textures/images/emerald_in_gold_spec.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glGenTextures(1, &material.shininess);
-    glBindTexture(GL_TEXTURE_2D, material.shininess);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-
-    data = stbi_load("src/assets/textures/images/emerald_in_gold_shine.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
     // Z-Buffer
     glEnable(GL_DEPTH_TEST);
 
-    // Buffers
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-    unsigned int cubeVAO;
-    glGenVertexArrays(1, &cubeVAO);
-    glBindVertexArray(cubeVAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+    // Model
+    stbi_set_flip_vertically_on_load(true);
+    Model model = Model("src/assets/backpack/backpack.obj");
 
     // Render loop
     while (!glfwWindowShouldClose(window))
@@ -276,40 +148,30 @@ int main()
         view = glm::lookAt(camPos,
                            camTrg,
                            camDirUp);
+
         projection = glm::perspective(glm::radians(camFov), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 10000.0f);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, material.diff);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, material.spec);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, material.shininess);
+        glm::mat4 modelMat = glm::mat4(1.0f);
+        modelMat = glm::scale(modelMat, glm::vec3(25.0f));
 
         objectShader.Use();
-        objectShader.Set("material", material, GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2);
         objectShader.Set("light", light);
         objectShader.Set("viewPos", camPos);
 
         objectShader.Set("view", view);
         objectShader.Set("projection", projection);
-
-        for (int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(cubePositions[i]));
-            model = glm::rotate(model,
-                                glm::radians(i * 20.0f + 45.0f),
-                                glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
-            objectShader.Set("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        objectShader.Set("model", modelMat);
 
         light.pos = camPos;
         light.dir = camDir;
 
+        // Drawing
+        model.Draw(objectShader);
+
         // Rendering and callback events
         glfwSwapBuffers(window);
         glfwPollEvents();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 
     glfwTerminate();
@@ -329,15 +191,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) return;
 
-    bool shouldReturn;
-    if (!mouseMoved) shouldReturn = true;
-    mouseMoved = true;
-
-    if (shouldReturn)
+    if (!mouseMoved)
     {
         lastMousePos = glm::vec2(xpos, ypos);
+        mouseMoved = true;
         return;
     }
+
+    mouseMoved = true;
 
     glm::vec2 offset = glm::vec2(glm::vec2(xpos, ypos) - lastMousePos);    
     offset *= mouseSensitivity;
