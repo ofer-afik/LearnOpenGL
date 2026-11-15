@@ -8,13 +8,27 @@
 #include <sstream>
 #include <iostream>
 
-struct Light {
+struct SpotLight {
+    glm::vec3 pos;
+    glm::vec3 dir;
+    float innerCutOff;
+    float outerCutOff;
+
+    glm::vec3 amb;
+    glm::vec3 color;
+
+    float linear;
+    float quadratic;
+};
+
+struct PointLight {
     glm::vec3 pos;
     glm::vec3 amb;
     glm::vec3 color;
 
     float linear;
     float quadratic;
+    
 };
 
 struct Material {
@@ -141,11 +155,14 @@ public:
         glUniform1i(glGetUniformLocation(ID, (name + ".spec").c_str()), spec);
         glUniform1i(glGetUniformLocation(ID, (name + ".shininess").c_str()), shininess);
     }
-    void Set(const std::string &name, Light value) const
+    void Set(const std::string &name, SpotLight value) const
     {
         glUniform3fv(glGetUniformLocation(ID, (name + ".pos").c_str()), 1, glm::value_ptr(value.pos));
+        glUniform3fv(glGetUniformLocation(ID, (name + ".dir").c_str()), 1, glm::value_ptr(value.dir));
         glUniform3fv(glGetUniformLocation(ID, (name + ".amb").c_str()), 1, glm::value_ptr(value.amb));
         glUniform3fv(glGetUniformLocation(ID, (name + ".color").c_str()), 1, glm::value_ptr(value.color));
+        glUniform1f(glGetUniformLocation(ID, (name + ".innerCutOff").c_str()), (float)std::cos(glm::radians(value.innerCutOff)));
+        glUniform1f(glGetUniformLocation(ID, (name + ".outerCutOff").c_str()), (float)std::cos(glm::radians(value.outerCutOff)));
         glUniform1f(glGetUniformLocation(ID, (name + ".linear").c_str()), (float)value.linear);
         glUniform1f(glGetUniformLocation(ID, (name + ".quadratic").c_str()), (float)value.quadratic);
     }
