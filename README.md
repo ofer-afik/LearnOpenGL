@@ -1,10 +1,10 @@
 # LearnOpenGL
-## Currently: an Example of the Beginnings of a Phong Method Shader
+## Currently: an Example of a Phong Method Shader, using Assimp to load models
 Dun dun dun!
 
 I am trying to self learn OpenGL, using [LearnOpenGL](learnopengl.com). Why? Because it's interesting, fun, cool, and challenging. I have worked with [Raylib](raylib.com) in the past, so I have some low-level graphics programming knowledge, and a firm understanding of C++.
 
-I have a scene with scattered cubes
+I have a scene with a BACKPACK! Amazing.
 
 First release was a very interesting app, with a triangle:
 
@@ -16,7 +16,7 @@ Later it was a bit better:
 
 And now, the current version is best.
 
-Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.3.0)!
+Try it out [here](https://github.com/ofer-afik/LearnOpenGL/releases/tag/v0.4.0)!
 
 ## Controls
 Arrows: move on the xy plane (remember - in most graphics programming topics, y is up)
