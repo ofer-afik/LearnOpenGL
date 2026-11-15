@@ -113,9 +113,9 @@ int main()
     SpotLight light = SpotLight{camPos,
                                 camDir,
                                 15.0f,
-                                25.0f,
+                                45.0f,
                                 glm::vec3(0.15f, 0.15f, 0.15f),
-                                glm::vec3(1.0f, 0.75f, 0.7f),
+                                glm::vec3(1.0f, 1.0f, 1.0f),
                                 0.0045f, 0.000075f};
 
     // Z-Buffer

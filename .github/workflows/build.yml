@@ -41,7 +41,8 @@ jobs:
           {
             mkdir -p package/src/assets
             cp build/build package/build
-            cp -R src/assets/. package/src/assets/
+            cp -R build/src/assets/. package/src/assets/
+            python scripts/validate_package_assets.py package
           } 2>&1 | tee -a logs/terminal.log
       - name: Smoke test Linux application
         if: steps.package.outcome == 'success'
@@ -92,7 +93,8 @@ jobs:
           {
             mkdir -p package/src/assets
             cp build/build package/build
-            cp -R src/assets/. package/src/assets/
+            cp -R build/src/assets/. package/src/assets/
+            python scripts/validate_package_assets.py package
           } 2>&1 | tee -a logs/terminal.log
       - name: Validate macOS package
         if: steps.package.outcome == 'success'
@@ -164,7 +166,8 @@ jobs:
           {
             mkdir -p package/src/assets
             cp build/build.exe package/build.exe
-            cp -R src/assets/. package/src/assets/
+            cp -R build/src/assets/. package/src/assets/
+            python scripts/validate_package_assets.py package
           } 2>&1 | tee -a logs/terminal.log
       - name: Smoke test Windows application
         if: steps.package.outcome == 'success'

@@ -68,6 +68,8 @@ if(LEARNOPENGL_STATIC_CXX_RUNTIME AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 add_custom_target(stage_assets
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+        "${CMAKE_CURRENT_BINARY_DIR}/src/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/src/assets"
         "${CMAKE_CURRENT_BINARY_DIR}/src/assets"
