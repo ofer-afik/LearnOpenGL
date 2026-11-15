@@ -115,7 +115,7 @@ int main()
                                 15.0f,
                                 25.0f,
                                 glm::vec3(0.15f, 0.15f, 0.15f),
-                                glm::vec3(1.0f),
+                                glm::vec3(1.0f, 0.75f, 0.7f),
                                 0.0045f, 0.000075f};
 
     // Z-Buffer
@@ -123,11 +123,19 @@ int main()
 
     // Model
     stbi_set_flip_vertically_on_load(true);
-    Model model = Model("src/assets/backpack/backpack.obj");
+    glfwSetWindowTitle(window, "LearnOpenGL - Loading model...");
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+    Model model = Model("src/assets/backpack/backpack.obj", [] { glfwPollEvents(); });
+    glfwSetWindowTitle(window, "LearnOpenGL");
 
     // Render loop
+    constexpr auto targetFrameTime = std::chrono::duration<double>(1.0 / 60.0);
     while (!glfwWindowShouldClose(window))
     {
+        const auto frameStart = std::chrono::steady_clock::now();
+
         // Clear background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -171,7 +179,11 @@ int main()
         // Rendering and callback events
         glfwSwapBuffers(window);
         glfwPollEvents();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        const auto frameTime = std::chrono::steady_clock::now() - frameStart;
+        if (frameTime < targetFrameTime)
+        {
+            std::this_thread::sleep_for(targetFrameTime - frameTime);
+        }
     }
 
     glfwTerminate();
